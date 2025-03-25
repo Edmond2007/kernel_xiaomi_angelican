@@ -22,7 +22,7 @@ jobs:
           sudo apt update
           sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev python2
 
-      - name: Ensure DrvGen.py Works (Python 2)
+      - name: Ensure DrvGen.py Works (Force Python 2)
         run: |
           export ARCH=arm64
           export CROSS_COMPILE=aarch64-linux-gnu-
@@ -44,9 +44,9 @@ jobs:
           mkdir -p output
           if [ -f arch/arm64/boot/Image.gz-dtb ]; then
             cp arch/arm64/boot/Image.gz-dtb output/
-            echo "Kernel Build Completed Successfully!"
+            echo "✅ Kernel Build Completed Successfully!"
           else
-            echo "Kernel Image not found!" && exit 1
+            echo "❌ Kernel Image not found!" && exit 1
           fi
 
       - name: Upload Kernel Artifact
