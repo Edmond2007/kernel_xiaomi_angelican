@@ -26,6 +26,7 @@ jobs:
         run: |
           export ARCH=arm64
           export CROSS_COMPILE=aarch64-linux-gnu-
+          chmod +x tools/dct/DrvGen.py 
           make clean
           make mrproper
           make angelican_defconfig
