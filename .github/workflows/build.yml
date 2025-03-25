@@ -22,13 +22,24 @@ jobs:
           sudo apt update
           sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev python3
 
-      - name: Debug Environment
+      - name: Advanced Debugging
         run: |
           echo "Current directory: $(pwd)"
+          echo "Shell: $SHELL"
+          echo "PATH: $PATH"
           ls -l
           ls -l tools/dct
           file tools/dct/DrvGen.py
+          which python3
           python3 --version
+          cat scripts/drvgen/drvgen.mk | grep DrvGen
+
+      - name: Ensure DrvGen.py Works
+        run: |
+          export ARCH=arm64
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          chmod +x tools/dct/DrvGen.py
+          python3 tools/dct/DrvGen.py --help || exit 1
 
       - name: Build Kernel
         run: |
@@ -36,12 +47,6 @@ jobs:
           export CROSS_COMPILE=aarch64-linux-gnu-
           export LC_ALL=C.UTF-8
           export LANG=C.UTF-8
-
-          # Ensure DrvGen.py is executable and works
-          chmod +x $(pwd)/tools/dct/DrvGen.py
-          python3 $(pwd)/tools/dct/DrvGen.py --help || exit 1
-
-          # Start Kernel Build
           make clean && make mrproper
           make angelican_defconfig
           make -j$(nproc) V=1
