@@ -20,9 +20,20 @@ jobs:
       - name: Set Up Environment
         run: |
           sudo apt update
-          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev python2
+          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev curl
 
-      - name: Ensure DrvGen.py Works (Force Python 2)
+      - name: Manually Install Python 2
+        run: |
+          curl -O https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+          tar -xvf Python-2.7.18.tgz
+          cd Python-2.7.18
+          ./configure --prefix=/usr/local
+          make -j$(nproc)
+          sudo make altinstall
+          python2.7 --version || exit 1
+          sudo ln -sf /usr/local/bin/python2.7 /usr/bin/python2
+
+      - name: Ensure Python 2 Works with DrvGen.py
         run: |
           export ARCH=arm64
           export CROSS_COMPILE=aarch64-linux-gnu-
