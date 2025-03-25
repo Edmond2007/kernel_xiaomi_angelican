@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -20,26 +20,14 @@ jobs:
       - name: Set Up Environment
         run: |
           sudo apt update
-          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev python3
+          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev python2
 
-      - name: Advanced Debugging
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Shell: $SHELL"
-          echo "PATH: $PATH"
-          ls -l
-          ls -l tools/dct
-          file tools/dct/DrvGen.py
-          which python3
-          python3 --version
-          cat scripts/drvgen/drvgen.mk | grep DrvGen
-
-      - name: Ensure DrvGen.py Works
+      - name: Ensure DrvGen.py Works (Python 2)
         run: |
           export ARCH=arm64
           export CROSS_COMPILE=aarch64-linux-gnu-
           chmod +x tools/dct/DrvGen.py
-          python3 tools/dct/DrvGen.py --help || exit 1
+          python2 tools/dct/DrvGen.py --help || exit 1
 
       - name: Build Kernel
         run: |
