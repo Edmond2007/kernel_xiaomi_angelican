@@ -20,23 +20,41 @@ jobs:
       - name: Set Up Environment
         run: |
           sudo apt update
-          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev ccache
+          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev python3
+
+      - name: Verify Python & Environment
+        run: |
+          python3 --version
+          ls -l tools/dct/DrvGen.py
+          chmod +x tools/dct/DrvGen.py
 
       - name: Build Kernel
         run: |
           export ARCH=arm64
           export CROSS_COMPILE=aarch64-linux-gnu-
-          chmod +x tools/dct/DrvGen.py 
-          make clean
-          make mrproper
+          export LC_ALL=C.UTF-8
+          export LANG=C.UTF-8
+
+          # Debug Output
+          echo "Starting Clean Build"
+          make clean && make mrproper
+
+          # Verify DrvGen.py Works
+          python3 tools/dct/DrvGen.py --help || exit 1
+
+          # Build Kernel with Verbose Output
           make angelican_defconfig
-          make -j$(nproc)
+          make -j$(nproc) V=1
 
       - name: Package Kernel
         run: |
-          mkdir output
-          cp arch/arm64/boot/Image.gz-dtb output/
-          echo "Build Completed!"
+          mkdir -p output
+          if [ -f arch/arm64/boot/Image.gz-dtb ]; then
+            cp arch/arm64/boot/Image.gz-dtb output/
+            echo "Kernel Build Completed Successfully!"
+          else
+            echo "Kernel Image not found!" && exit 1
+          fi
 
       - name: Upload Kernel Artifact
         uses: actions/upload-artifact@v4
