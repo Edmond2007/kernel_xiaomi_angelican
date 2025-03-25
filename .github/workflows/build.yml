@@ -1,0 +1,42 @@
+name: Build NetHunter Kernel for Redmi 9C NFC
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Kernel Source
+        uses: actions/checkout@v4
+
+      - name: Set Up Environment
+        run: |
+          sudo apt update
+          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev ccache
+
+      - name: Build Kernel
+        run: |
+          export ARCH=arm64
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          make angelican_defconfig
+          make -j$(nproc)
+
+      - name: Package Kernel
+        run: |
+          mkdir output
+          cp arch/arm64/boot/Image.gz-dtb output/
+          echo "Build Completed!"
+
+      - name: Upload Kernel Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sakurajima_Nethunter_kernel
+          path: output/*
