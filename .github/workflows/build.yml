@@ -32,14 +32,6 @@ jobs:
           sudo make altinstall
           sudo ln -sf /usr/local/bin/python2.7 /usr/bin/python  # Set Python 2 as default
 
-      - name: Verify Python Version
-        run: |
-          echo "Checking Python versions..."
-          which python
-          python --version
-          which python2
-          python2 --version
-
       - name: Ensure DrvGen.py Works
         run: |
           export ARCH=arm64
