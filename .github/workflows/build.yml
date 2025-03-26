@@ -37,7 +37,7 @@ jobs:
           export ARCH=arm64
           export CROSS_COMPILE=aarch64-linux-gnu-
           chmod +x tools/dct/DrvGen.py
-          python $(pwd)/tools/dct/DrvGen.py --help || exit 1
+          python $(pwd)/tools/dct/DrvGen.py || exit 1
 
       - name: Build Kernel
         run: |
