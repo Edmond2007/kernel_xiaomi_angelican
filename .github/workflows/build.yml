@@ -17,10 +17,29 @@ jobs:
       - name: Checkout Kernel Source
         uses: actions/checkout@v4
 
-      - name: Set Up Environment
+      - name: Set Up Dependencies
         run: |
           sudo apt update
-          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev curl make build-essential zlib1g-dev libffi-dev
+          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev curl make build-essential
+
+      - name: Download and Set Up Toolchains
+        run: |
+          # Download the toolchains
+          curl -LO "https://github.com/ravindu644/Android-Kernel-Tutorials/releases/download/toolchains/clang-r353983c.tar.gz"
+          curl -LO "https://github.com/ravindu644/Android-Kernel-Tutorials/releases/download/toolchains/aarch64-linux-android-4.9.tar.gz"
+          
+          # Extract the downloaded toolchains
+          tar -xvzf clang-r353983c.tar.gz
+          tar -xvzf aarch64-linux-android-4.9.tar.gz
+          
+          # Move them to a proper directory for usage
+          sudo mv clang-r353983c /opt/
+          sudo mv aarch64-linux-android-4.9 /opt/
+
+          # Set environment variables for the toolchains
+          export PATH=$PATH:/opt/clang-r353983c/bin:/opt/aarch64-linux-android-4.9/bin
+          export CROSS_COMPILE=aarch64-linux-android-
+          export ARCH=arm64
 
       - name: Manually Install Python 2
         run: |
@@ -30,19 +49,10 @@ jobs:
           ./configure --prefix=/usr/local
           make -j$(nproc)
           sudo make altinstall
-          sudo ln -sf /usr/local/bin/python2.7 /usr/bin/python  # Set Python 2 as default
-
-      - name: Ensure DrvGen.py Works
-        run: |
-          export ARCH=arm64
-          export CROSS_COMPILE=aarch64-linux-gnu-
-          chmod +x tools/dct/DrvGen.py
-          python $(pwd)/tools/dct/DrvGen.py || exit 1
+          sudo ln -sf /usr/local/bin/python2.7 /usr/bin/python
 
       - name: Build Kernel
         run: |
-          export ARCH=arm64
-          export CROSS_COMPILE=aarch64-linux-gnu-
           export LC_ALL=C.UTF-8
           export LANG=C.UTF-8
           make clean && make mrproper
