@@ -20,7 +20,31 @@ jobs:
       - name: Set Up Environment
         run: |
           sudo apt update
-          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev curl
+          sudo apt install -y gcc-aarch64-linux-gnu bc bison flex libssl-dev curl make build-essential zlib1g-dev libffi-dev
+
+      - name: Manually Install Python 2
+        run: |
+          curl -O https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+          tar -xf Python-2.7.18.tgz
+          cd Python-2.7.18
+          ./configure --prefix=/usr/local
+          make -j$(nproc)
+          sudo make altinstall
+          sudo ln -sf /usr/local/bin/python2.7 /usr/bin/python  # Set Python 2 as default
+
+      - name: Verify Python Version
+        run: |
+          echo "Checking Python versions..."
+          which python
+          python --version
+          which python2
+          python2 --version
+
+      - name: Ensure DrvGen.py Works
+        run: |
+          export ARCH=arm64
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          chmod +x tools/dct/DrvGen.py
 
       - name: Build Kernel
         run: |
