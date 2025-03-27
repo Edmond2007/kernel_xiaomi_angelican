@@ -32,19 +32,19 @@ jobs:
           rm -f clang-r353983c.tar.gz
           cd ~
 
-          # Download GCC for ARM64
+          # Download AOSP GCC 4.9
           mkdir -p /opt/gcc
           cd /opt/gcc
-          curl -LO "https://github.com/ravindu644/Android-Kernel-Tutorials/releases/download/toolchains/aarch64-linux-android-4.9.tar.gz"
-          tar -xvzf aarch64-linux-android-4.9.tar.gz --strip-components=4
-          rm -f aarch64-linux-android-4.9.tar.gz
+          curl -LO "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/main.tar.gz"
+          tar -xvzf main.tar.gz --strip-components=1
+          rm -f main.tar.gz
           cd ~
 
           # Export toolchain paths
           echo "export PATH=/opt/clang/bin:/opt/gcc/bin:$PATH" >> ~/.bashrc
           echo "export ARCH=arm64" >> ~/.bashrc
           echo "export CROSS_COMPILE=/opt/gcc/bin/aarch64-linux-android-" >> ~/.bashrc
-          echo "export CC=/opt/clang/bin/clang" >> ~/.bashrc
+          echo "export CC=clang" >> ~/.bashrc
           source ~/.bashrc
 
       - name: Manually Install Python 2
@@ -59,8 +59,13 @@ jobs:
 
       - name: Build Kernel
         run: |
+          export PATH=/opt/clang/bin:/opt/gcc/bin:$PATH
+          export ARCH=arm64
+          export CROSS_COMPILE=/opt/gcc/bin/aarch64-linux-android-
+          export CC=clang
           export LC_ALL=C.UTF-8
           export LANG=C.UTF-8
+          
           make clean && make mrproper
           make angelican_defconfig
           make -j$(nproc) V=1
