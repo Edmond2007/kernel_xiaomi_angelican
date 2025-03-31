@@ -1,4 +1,4 @@
-name: Build NetHunter Kernel for Redmi 9C NFC
+Name: Build NetHunter Kernel for Redmi 9C NFC
 
 on:
   push:
@@ -50,6 +50,7 @@ jobs:
 
       - name: Build Kernel
         run: |
+          set -x # Add for debugging
           export PATH=/opt/gcc/bin:$PATH
           export ARCH=arm64
           export CROSS_COMPILE=/opt/gcc/bin/aarch64-linux-gnu-
@@ -60,8 +61,24 @@ jobs:
           make angelican_defconfig
           make -j$(nproc) V=1
 
+      - name: Cleanup After Build
+        if: always() #  Always run cleanup
+        run: |
+          set -x # Add for debugging
+          # Remove intermediate files and directories
+          find . -name "*.o" -delete
+          find . -name "*.ko" -delete
+          rm -rf build
+          rm -rf tmp
+          rm -rf output  # Clean output dir before packaging (just in case)
+
+          # Optional: Clean more aggressively if needed
+          # find . -name "*dbg" -delete #remove debug files
+          # rm -rf $(find . -name ".*" -type d) # Remove hidden directories (use with caution!)
+
       - name: Package Kernel
         run: |
+          set -x # Add for debugging
           mkdir -p output
           if [ -f arch/arm64/boot/Image.gz-dtb ]; then
             cp arch/arm64/boot/Image.gz-dtb output/
