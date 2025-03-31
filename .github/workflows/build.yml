@@ -35,7 +35,7 @@ jobs:
           echo "export PATH=/opt/gcc/bin:$PATH" >> ~/.bashrc
           echo "export ARCH=arm64" >> ~/.bashrc
           echo "export CROSS_COMPILE=/opt/gcc/bin/aarch64-linux-gnu-" >> ~/.bashrc
-          echo "export CC=clang" >> ~/.bashrc
+#          echo "export CC=clang" >> ~/.bashrc
           source ~/.bashrc
 
       - name: Manually Install Python 2
@@ -53,7 +53,7 @@ jobs:
           export PATH=/opt/gcc/bin:$PATH
           export ARCH=arm64
           export CROSS_COMPILE=/opt/gcc/bin/aarch64-linux-gnu-
-          export CC=clang
+ #         export CC=clang
           export LC_ALL=C.UTF-8
           export LANG=C.UTF-8
           make clean && make mrproper
