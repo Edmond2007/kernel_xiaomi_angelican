@@ -35,7 +35,7 @@ jobs:
           echo "export PATH=/opt/gcc/bin:$PATH" >> ~/.bashrc
           echo "export ARCH=arm64" >> ~/.bashrc
           echo "export CROSS_COMPILE=/opt/gcc/bin/aarch64-linux-gnu-" >> ~/.bashrc
-#          echo "export CC=clang" >> ~/.bashrc
+#          echo "export CC=clang" >> ~/.bashr
           source ~/.bashrc
 
       - name: Manually Install Python 2
